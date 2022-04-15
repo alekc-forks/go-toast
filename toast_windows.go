@@ -38,6 +38,13 @@ func WithIcon(pathIcon string) NotificationOption {
 	}
 }
 
+// WithActionCentreExpiration set expiration after which the notification should be removed
+func WithActionCentreExpiration(seconds int) NotificationOption {
+	return func(n *notification) {
+		n.ActionCentreExpirationSeconds = seconds
+	}
+}
+
 func WithIconRaw(raw []byte) NotificationOption {
 	return func(n *notification) {
 		randBytes := make([]byte, 4)
@@ -266,6 +273,7 @@ $template = @"
 $xml = New-Object Windows.Data.Xml.Dom.XmlDocument
 $xml.LoadXml($template)
 $go_toast = New-Object Windows.UI.Notifications.ToastNotification $xml
+{{if gt .ActionCentreExpirationSeconds 0 }}$go_toast.ExpirationTime = [DateTimeOffset]::Now.AddSeconds({{.ActionCentreExpirationSeconds}}){{ end }}
 [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($APP_ID).Show($go_toast)
 `
 
@@ -295,6 +303,9 @@ type notification struct {
 	// An optional path to an image on the OS to display to the left of the title & message.
 	Icon             string
 	_tmpIconFilename string
+
+	// If greater than 0, will remove toast from notification centre after given amount of time
+	ActionCentreExpirationSeconds int
 
 	// The type of notification level action (like Action)
 	ActivationType string

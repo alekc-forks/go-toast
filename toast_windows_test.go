@@ -6,6 +6,7 @@ import (
 
 func TestPush(t *testing.T) {
 	checkErr(t, Push("test_message"))
+	checkErr(t, Push("test_message", WithActionCentreExpiration(1)))
 	checkErr(t, Push("test_message", WithAppID("test_AppID")))
 	checkErr(t, Push("test_message", WithAppID("test_AppID"), WithTitle("test_title")))
 	checkErr(t, Push("test_message", WithAudio(Default)))
